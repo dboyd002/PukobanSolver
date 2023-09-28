@@ -1,10 +1,17 @@
 import pygame
+import time
 import manhattan_distance
+import greedy_search
+import breadth_first_search
+import depth_first_search
+import astar_search
 
 WALL_SYMBOL = 'O'
 STORAGE_SYMBOL = 'S'
 BOX_SYMBOL = 'B'
+BOX_OVERLAPPING_STORAGE_SYMBOL = 'C'
 ROBOT_SYMBOL = 'R'
+ROBOT_OVERLAPPING_STORAGE_SYMBOL = 'T'
 
 EMPTY_COLOR = (255, 255, 255) # White
 WALL_COLOR = (160, 172, 180)      # Gray
@@ -76,14 +83,20 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and draw_buttons:  # Left mouse button
+            if event.button == 1 and draw_buttons:
                 for button in buttons:
                     if button["rect"].collidepoint(event.pos):
-                        draw_buttons = False
-                        # Handle button click here based on button["algorithm"]
+                        # draw_buttons = False
+                        # Solve the puzzle using Greedy algorithm
                         if button["algorithm"] == "Greedy":
-                            print(manhattan_distance.m_d_heuristic(puzzle_grid))
-                            print(manhattan_distance.m_d_heuristic_plus(puzzle_grid))
+                            puzzle_grid = greedy_search.greedy_search(puzzle_grid)
+                        elif button["algorithm"] == "BFS":
+                            puzzle_grid = breadth_first_search.breadth_first_search(puzzle_grid)
+                        elif button["algorithm"] == "DFS":
+                            puzzle_grid = depth_first_search.depth_first_search(puzzle_grid)
+                        elif button["algorithm"] == "A*":
+                            puzzle_grid = astar_search.astar_search(puzzle_grid)
+                            
 
     # Clear the screen
     screen.fill(EMPTY_COLOR)
@@ -109,9 +122,9 @@ while running:
                 pygame.draw.rect(screen, WALL_COLOR, cell_rect, 1)  # Cell borders
             elif char == STORAGE_SYMBOL:
                 screen.blit(scaled_storage_image, cell_rect.topleft)
-            elif char == BOX_SYMBOL:
+            elif char == BOX_SYMBOL or char == BOX_OVERLAPPING_STORAGE_SYMBOL:
                 screen.blit(scaled_box_image, cell_rect.topleft)
-            elif char == ROBOT_SYMBOL:
+            elif char == ROBOT_SYMBOL or char == ROBOT_OVERLAPPING_STORAGE_SYMBOL:
                 screen.blit(scaled_robot_image, cell_rect.topleft)
 
     # Draw buttons
